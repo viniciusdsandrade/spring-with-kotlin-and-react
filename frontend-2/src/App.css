@@ -1,5 +1,3 @@
-/* App.css */
-
 .container {
     display: flex;
     flex-direction: column;
@@ -8,6 +6,30 @@
     padding: 20px;
     max-width: 600px;
     margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.title {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.authors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.author {
+    font-size: 1.2em;
+    color: #666;
+    margin: 5px 0;
 }
 
 /* Estilos para os Selects (Forma Geométrica e Unidade de Medida) */
@@ -27,7 +49,6 @@ select {
     -webkit-appearance: none;
     background-size: 16px;
     color: black; /* Cor do texto do select */
-    /* Cor de fundo do select */
     background: white url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right 10px center;
 }
 
@@ -100,7 +121,6 @@ button:disabled {
     align-items: center;
     margin-bottom: 10px;
     justify-content: space-between;
-
 }
 
 .result-label {

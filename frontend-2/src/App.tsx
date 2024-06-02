@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import './App.css';
+import './App.css'
+import FigureService from './FigureService.ts';
 
-// Definindo o tipo para as formas geométricas
 export type GeometricShape =
     | 'CUBO'
     | 'ESFERA'
@@ -36,29 +36,33 @@ interface CalculationResults {
 }
 
 // Componente para exibir os resultados
-const ResultDisplay: React.FC<{ results: CalculationResults; unit: MeasurementUnit }> = ({
-                                                                                             results,
-                                                                                             unit,
-                                                                                         }) => (
-    <div className="result-container">
+const ResultDisplay: React.FC<{
+    results: CalculationResults;
+    unit: MeasurementUnit;
+}> = ({results, unit}) => (
+    <div> {/* Adicione uma div aqui */}
         <h2>Resultados:</h2>
         <div className="result-item">
             <span className="result-label">Perímetro:</span>
             <span>
-        {results.perimetro !== null ? `${results.perimetro!.toFixed(2)} ${unit}` : '-'}
-      </span>
+                {results.perimetro !== null
+                    ? `${results.perimetro!.toFixed(2)} ${unit}`
+                    : '-'}
+            </span>
         </div>
         <div className="result-item">
             <span className="result-label">Área:</span>
             <span>
-        {results.area !== null ? `${results.area!.toFixed(2)} ${unit}²` : '-'}
-      </span>
+                {results.area !== null ? `${results.area!.toFixed(2)} ${unit}²` : '-'}
+            </span>
         </div>
         <div className="result-item">
             <span className="result-label">Volume:</span>
             <span>
-        {results.volume !== null ? `${results.volume!.toFixed(2)} ${unit}³` : '-'}
-      </span>
+                {results.volume !== null
+                    ? `${results.volume!.toFixed(2)} ${unit}³`
+                    : '-'}
+            </span>
         </div>
     </div>
 );
@@ -69,104 +73,11 @@ const App: React.FC = () => {
     const [results, setResults] = useState<CalculationResults>({});
     const [selectedUnit, setSelectedUnit] = useState<MeasurementUnit>('m'); // Estado para a unidade selecionada
 
-    const handleMeasurementChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleMeasurementChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const {name, value} = event.target;
         setMeasurements({...measurements, [name]: parseFloat(value)});
-    };
-
-    // Funções para calcular as propriedades geométricas
-    const calcularCubo = (lado: number): CalculationResults => {
-        const perimetro = 12 * lado;
-        const area = 6 * lado * lado;
-        const volume = lado * lado * lado;
-        return {perimetro, area, volume};
-    };
-
-    const calcularEsfera = (raio: number): CalculationResults => {
-        const perimetro = 2 * Math.PI * raio;
-        const area = 4 * Math.PI * raio * raio;
-        const volume = (4 / 3) * Math.PI * Math.pow(raio, 3);
-        return {perimetro, area, volume};
-    };
-
-    const calcularCilindro = (raio: number, altura: number): CalculationResults => {
-        const perimetroBase = 2 * Math.PI * raio;
-        const areaBase = Math.PI * raio * raio;
-        const areaLateral = perimetroBase * altura;
-        const areaTotal = 2 * areaBase + areaLateral;
-        const volume = areaBase * altura;
-        return {perimetro: perimetroBase, area: areaTotal, volume};
-    };
-
-    const calcularCone = (raio: number, altura: number): CalculationResults => {
-        const geratriz = Math.sqrt(raio * raio + altura * altura);
-        const perimetroBase = 2 * Math.PI * raio;
-        const areaBase = Math.PI * raio * raio;
-        const areaLateral = Math.PI * raio * geratriz;
-        const areaTotal = areaBase + areaLateral;
-        const volume = (1 / 3) * areaBase * altura;
-        return {perimetro: perimetroBase, area: areaTotal, volume};
-    };
-
-    const calcularPiramide = (base: number, altura: number): CalculationResults => {
-        const apotemaBase = base / (2 * Math.sqrt(2)); // Para pirâmide de base quadrada
-        const apotemaLateral = Math.sqrt(Math.pow(altura, 2) + Math.pow(apotemaBase, 2));
-        const areaBase = base * base;
-        const areaLateral = (perimetroQuadrado(base) * apotemaLateral) / 2;
-        const areaTotal = areaBase + areaLateral;
-        const volume = (areaBase * altura) / 3;
-        return {perimetro: perimetroQuadrado(base), area: areaTotal, volume};
-    };
-
-    const calcularPrismaRetangular = (
-        comprimento: number,
-        largura: number,
-        altura: number
-    ): CalculationResults => {
-        const perimetroBase = 2 * (comprimento + largura);
-        const areaBase = comprimento * largura;
-        const areaLateral = perimetroBase * altura;
-        const areaTotal = 2 * areaBase + areaLateral;
-        const volume = areaBase * altura;
-        return {perimetro: perimetroBase, area: areaTotal, volume};
-    };
-
-    const calcularPrismaTriangular = (
-        base: number,
-        lado1: number,
-        lado2: number,
-        altura: number
-    ): CalculationResults => {
-        const perimetroBase = base + lado1 + lado2;
-        const areaBase = heron(base, lado1, lado2);
-        const areaLateral = perimetroBase * altura;
-        const areaTotal = 2 * areaBase + areaLateral;
-        const volume = areaBase * altura;
-        return {perimetro: perimetroBase, area: areaTotal, volume};
-    };
-
-    const calcularTetraedro = (aresta: number): CalculationResults => {
-        const perimetro = 3 * aresta;
-        const area = Math.sqrt(3) * aresta * aresta;
-        const volume = (Math.sqrt(2) / 12) * aresta * aresta * aresta;
-        return {perimetro, area, volume};
-    };
-
-    const calcularOctaedro = (aresta: number): CalculationResults => {
-        const perimetro = 6 * aresta;
-        const area = 2 * Math.sqrt(3) * aresta * aresta;
-        const volume = (Math.sqrt(2) / 3) * aresta * aresta * aresta;
-        return {perimetro, area, volume};
-    };
-
-    // Funções auxiliares
-    const perimetroQuadrado = (lado: number): number => {
-        return 4 * lado;
-    };
-
-    const heron = (a: number, b: number, c: number): number => {
-        const s = (a + b + c) / 2;
-        return Math.sqrt(s * (s - a) * (s - b) * (s - c));
     };
 
     const calculate = async () => {
@@ -175,50 +86,70 @@ const App: React.FC = () => {
             return;
         }
 
-        let newResults: CalculationResults = {};
+        try {
+            // Construa o objeto measurementsToSend com o campo "type"
+            const measurementsToSend = {
+                type:
+                    shape === 'CUBO'
+                        ? 'cube'
+                        : shape === 'ESFERA'
+                            ? 'sphere'
+                            : shape === 'CILINDRO'
+                                ? 'cylinder'
+                                : shape === 'CONE'
+                                    ? 'cone'
+                                    : shape === 'PIRAMIDE'
+                                        ? 'piramid'
+                                        : shape === 'PRISMA_RETANGULAR'
+                                            ? 'rectangular_prism'
+                                            : shape === 'PRISMA_TRIANGULAR'
+                                                ? 'triangular_prism'
+                                                : shape === 'TETRAEDRO'
+                                                    ? 'tetraedron'
+                                                    : shape === 'OCTAEDRO'
+                                                        ? 'octaedro'
+                                                        : '', // Valor padrão, ajuste conforme necessário
+                ...(shape === 'CUBO' && {side: measurements.lado}),
+                ...(shape === 'ESFERA' && {radius: measurements.raio}),
+                ...(shape === 'CILINDRO' && {
+                    radius: measurements.raio,
+                    height: measurements.altura,
+                }),
+                ...(shape === 'CONE' && {
+                    radius: measurements.raio,
+                    height: measurements.altura,
+                }),
+                ...(shape === 'PIRAMIDE' && {
+                    base: measurements.base,
+                    height: measurements.altura,
+                }),
+                ...(shape === 'PRISMA_RETANGULAR' && {
+                    comprimento: measurements.comprimento,
+                    largura: measurements.largura,
+                    altura: measurements.altura,
+                }),
+                ...(shape === 'PRISMA_TRIANGULAR' && {
+                    base: measurements.base,
+                    lado1: measurements.lado1,
+                    lado2: measurements.lado2,
+                    altura: measurements.altura,
+                }),
+                ...(shape === 'TETRAEDRO' && {aresta: measurements.aresta}),
+                ...(shape === 'OCTAEDRO' && {aresta: measurements.aresta}),
+            };
 
-        switch (shape) {
-            case 'CUBO':
-                newResults = calcularCubo(measurements.lado || 0);
-                break;
-            case 'ESFERA':
-                newResults = calcularEsfera(measurements.raio || 0);
-                break;
-            case 'CILINDRO':
-                newResults = calcularCilindro(measurements.raio || 0, measurements.altura || 0);
-                break;
-            case 'CONE':
-                newResults = calcularCone(measurements.raio || 0, measurements.altura || 0);
-                break;
-            case 'PIRAMIDE':
-                newResults = calcularPiramide(measurements.base || 0, measurements.altura || 0);
-                break;
-            case 'PRISMA_RETANGULAR':
-                newResults = calcularPrismaRetangular(
-                    measurements.base || 0,
-                    measurements.altura || 0,
-                    measurements.profundidade || 0
-                );
-                break;
-            case 'PRISMA_TRIANGULAR':
-                newResults = calcularPrismaTriangular(
-                    measurements.base || 0,
-                    measurements.lado1 || 0,
-                    measurements.lado2 || 0,
-                    measurements.altura || 0
-                );
-                break;
-            case 'TETRAEDRO':
-                newResults = calcularTetraedro(measurements.aresta || 0);
-                break;
-            case 'OCTAEDRO':
-                newResults = calcularOctaedro(measurements.aresta || 0);
-                break;
-            default:
-                break;
+            // Chame a função calculateFigure do FigureService
+            const data = await FigureService.calculateFigure(
+                shape,
+                measurementsToSend
+            );
+
+            // Atualize o estado com os resultados do backend
+            setResults(data);
+        } catch (error) {
+            console.error('Erro ao calcular figura:', error);
+            // Lidere com o erro, exiba uma mensagem para o usuário, etc.
         }
-
-        setResults(newResults);
     };
 
     const renderMeasurementInputs = () => {
@@ -412,7 +343,13 @@ const App: React.FC = () => {
 
     return (
         <div className="container">
-            <h1>Calculator Geométrica</h1>
+            <header className="header">
+                <h1 className="title">Calculadora de Figuras Geométricas</h1>
+                <div className="authors">
+                    <h2 className="author">Vinícius dos Santos Andrade RA: 22333</h2>
+                    <h2 className="author">Arthur Gonçalves RA: 22300</h2>
+                </div>
+            </header>
 
             <div className="shape-selector">
                 <label htmlFor="shape">Forma Geométrica:</label>
@@ -461,7 +398,11 @@ const App: React.FC = () => {
             </button>
 
             {/* Passando a unidade selecionada para o ResultDisplay */}
-            {Object.keys(results).length > 0 && <ResultDisplay results={results} unit={selectedUnit}/>}
+            {Object.keys(results).length > 0 ? (
+                <ResultDisplay results={results} unit={selectedUnit}/>
+            ) : (
+                <p>Calculando resultados...</p> // Mensagem enquanto carrega
+            )}
         </div>
     );
 };

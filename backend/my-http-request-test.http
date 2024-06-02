@@ -1,0 +1,76 @@
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "octahedron",
+  "edge": 23
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "sphere",
+  "radius": 3.0
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "tetrahedron",
+  "edge": 5.0
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "piramid",
+  "base": 6.0
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "rectangular_prism",
+  "base": 4.2,
+  "height": 5.3,
+  "width": 6.4
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "triangular_prism",
+  "base": 3.3,
+  "height": 4.01,
+  "width": 5.45
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "cylinder",
+  "radius": 3.0,
+  "height": 7.0
+}
+
+###
+POST http://localhost:8080/api/v1/figures/calculate
+Content-Type: application/json
+
+{
+  "type": "cube",
+  "side": 5.32
+}

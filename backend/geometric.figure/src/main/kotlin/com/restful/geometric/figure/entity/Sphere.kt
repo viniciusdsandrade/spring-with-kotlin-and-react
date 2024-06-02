@@ -1,29 +1,58 @@
 package com.restful.geometric.figure.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 
-
 @Entity(name = "Sphere")
 @DiscriminatorValue("sphere")
-class Sphere(
+@Schema(description = "Represents a sphere entity.")
+data class Sphere(
 
+    @Schema(description = "The radius of the sphere.")
     @Column(name = "radius")
-    private val radius: Double
+    val radius: Double
 
 ) : Figure() {
 
     override fun calculateArea(): Double {
-        return 4 * Math.PI * radius * radius
+        val area = 4.0 * Math.PI * radius * radius
+        return df.format(area).toDouble()
     }
 
     override fun calculatePerimeter(): Double {
-        return 2 * Math.PI * radius
+        val perimeter = 2.0 * Math.PI * radius
+        return df.format(perimeter).toDouble()
     }
 
     override fun calculateVolume(): Double {
-        return 4.0 / 3.0 * Math.PI * radius * radius * radius
+        val volume = 4.0 / 3.0 * Math.PI * radius * radius * radius
+        return df.format(volume).toDouble()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Sphere) return false
+        if (!super.equals(other)) return false
+
+        if (radius != other.radius) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        val prime = 31
+        var hash = super.hashCode()
+
+        hash *= prime + radius.hashCode()
+
+        if (hash < 0) hash *= -1
+
+        return hash
+    }
+
+    override fun toString(): String {
+        return "${this::class.simpleName}(id = $id)"
+    }
 }
