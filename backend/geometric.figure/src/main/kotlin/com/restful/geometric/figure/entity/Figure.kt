@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema
     JsonSubTypes.Type(value = Sphere::class, name = "sphere"),
     JsonSubTypes.Type(value = Cylinder::class, name = "cylinder"),
     JsonSubTypes.Type(value = Cone::class, name = "cone"),
-    JsonSubTypes.Type(value = Piramid::class, name = "piramid"),
+    JsonSubTypes.Type(value = Pyramid::class, name = "piramid"),
     JsonSubTypes.Type(value = RectangularPrism::class, name = "rectangular_prism"),
     JsonSubTypes.Type(value = TriangularPrism::class, name = "triangular_prism"),
     JsonSubTypes.Type(value = Tetraedron::class, name = "tetrahedron"),

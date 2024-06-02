@@ -43,33 +43,78 @@ const ResultDisplay: React.FC<{
         <h2>Resultados:</h2>
         <div className="result-item">
             <span className="result-label">Perímetro:</span>
-            <span>
-        {results.perimetro !== null
-            ? `${results.perimetro!.toFixed(2)} ${unit}`
-            : '-'}
-      </span>
+            <span>{formatUnit(results.perimetro, unit)}</span>
         </div>
         <div className="result-item">
             <span className="result-label">Área:</span>
-            <span>
-        {results.area !== null ? `${results.area!.toFixed(2)} ${unit}²` : '-'}
-      </span>
+            <span>{formatUnit(results.area, unit, 2)}</span>
         </div>
         <div className="result-item">
             <span className="result-label">Volume:</span>
-            <span>
-        {results.volume !== null
-            ? `${results.volume!.toFixed(2)} ${unit}³`
-            : '-'}
-      </span>
+            <span>{formatUnit(results.volume, unit, 3)}</span>
         </div>
     </div>
 );
 
+// Função auxiliar para formatar as unidades
+const formatUnit = (value: number | null | undefined, unit: MeasurementUnit, exponent?: number) => {
+    if (value === undefined || value === null) return '-';
+    return `${value.toFixed(2)} ${unit}${exponent ? `^${exponent}` : ''}`;
+};
+
+// Função auxiliar para criar um input de medida
+const MeasurementInput = ({label, name, value, onChange}: {
+    label: string;
+    name: string;
+    value: number | undefined;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}) => (
+    <div>
+        <label htmlFor={name}>{label}</label>
+        <input
+            type="number"
+            id={name}
+            name={name}
+            value={value === undefined ? '' : value.toString()} // Converte para string se undefined
+            onChange={onChange}
+        />
+    </div>
+);
+
+// Função auxiliar para construir o requestBody
+// Função auxiliar para construir o requestBody
+const buildRequestBody = (figureType: GeometricShape, measurements: Measurements) => {
+    switch (figureType) {
+        case 'CUBO':
+            return {type: 'cube', measurements: {side: measurements.lado}};
+        case 'ESFERA':
+            return {type: 'sphere', measurements: {radius: measurements.raio}};
+        case 'CILINDRO':
+            return {type: 'cylinder', measurements: {radius: measurements.raio, height: measurements.altura}};
+        case 'CONE':
+            return {type: 'cone', measurements: {radius: measurements.raio, height: measurements.altura}};
+        case 'PIRAMIDE':
+            return { type: 'pyramid', measurements: { base: measurements.base, height: measurements.altura } };
+        case 'PRISMA_RETANGULAR':
+            return {
+                type: 'rectangular_prism',
+                measurements: {base: measurements.comprimento, height: measurements.altura, width: measurements.largura}
+            };
+        case 'PRISMA_TRIANGULAR':
+            return {
+                type: 'triangular_prism',
+                measurements: {base: measurements.base, height: measurements.altura, width: measurements.lado1}
+            };
+        case 'TETRAEDRO':
+            return {type: 'tetrahedron', measurements: {edge: measurements.aresta}};
+        case 'OCTAEDRO':
+            return {type: 'octahedron', measurements: {edge: measurements.aresta}};
+    }
+};
+
 const App: React.FC = () => {
-    const [shape, setShape] = useState<GeometricShape | ''>('');
+    const [figureType, setFigureType] = useState<GeometricShape | ''>('');
     const [measurements, setMeasurements] = useState<Measurements>({});
-    // Ajuste do estado results para receber a resposta da API
     const [results, setResults] = useState<CalculationResults>({
         perimetro: null,
         area: null,
@@ -83,71 +128,13 @@ const App: React.FC = () => {
     };
 
     const calculate = async () => {
-        if (!shape) {
+        if (!figureType) {
             alert('Selecione uma forma!');
             return;
         }
 
         try {
-            const requestBody = {
-                type: '',
-                measurements: {},
-            };
-
-            switch (shape) {
-                case 'CUBO':
-                    requestBody.type = 'cube';
-                    requestBody.measurements = {side: measurements.lado};
-                    break;
-                case 'ESFERA':
-                    requestBody.type = 'sphere';
-                    requestBody.measurements = {radius: measurements.raio};
-                    break;
-                case 'CILINDRO':
-                    requestBody.type = 'cylinder';
-                    requestBody.measurements = {
-                        radius: measurements.raio,
-                        height: measurements.altura,
-                    };
-                    break;
-                case 'CONE':
-                    requestBody.type = 'cone';
-                    requestBody.measurements = {
-                        radius: measurements.raio,
-                        height: measurements.altura,
-                    };
-                    break;
-                case 'PIRAMIDE':
-                    requestBody.type = 'pyramid';
-                    requestBody.measurements = {base: measurements.base};
-                    break;
-                case 'PRISMA_RETANGULAR':
-                    requestBody.type = 'rectangular_prism';
-                    requestBody.measurements = {
-                        base: measurements.comprimento,
-                        height: measurements.altura,
-                        width: measurements.largura,
-                    };
-                    break;
-                case 'PRISMA_TRIANGULAR':
-                    requestBody.type = 'triangular_prism';
-                    requestBody.measurements = {
-                        base: measurements.base,
-                        height: measurements.altura,
-                        width: measurements.lado1,
-                    };
-                    break;
-                case 'TETRAEDRO':
-                    requestBody.type = 'tetrahedron';
-                    requestBody.measurements = {edge: measurements.aresta};
-                    break;
-                case 'OCTAEDRO':
-                    requestBody.type = 'octahedron';
-                    requestBody.measurements = {edge: measurements.aresta};
-                    break;
-                default:
-                    return;
-            }
+            const requestBody = buildRequestBody(figureType, measurements);
 
             const response = await fetch('http://localhost:8080/api/v1/figures/calculate', {
                 method: 'POST',
@@ -162,7 +149,6 @@ const App: React.FC = () => {
             }
 
             const data = await response.json();
-            // ATUALIZA O ESTADO results COM A RESPOSTA DA API
             setResults({
                 area: data.area,
                 volume: data.volume,
@@ -175,191 +161,70 @@ const App: React.FC = () => {
     };
 
     const renderMeasurementInputs = () => {
-        switch (shape) {
+        switch (figureType) {
             case 'CUBO':
-                return (
-                    <div>
-                        <label htmlFor="lado">Lado:</label>
-                        <input
-                            type="number"
-                            id="lado"
-                            name="lado"
-                            value={measurements.lado || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                    </div>
-                );
+                return <MeasurementInput label="Lado:" name="lado" value={measurements.lado}
+                                         onChange={handleMeasurementChange}/>;
             case 'ESFERA':
-                return (
-                    <div>
-                        <label htmlFor="raio">Raio:</label>
-                        <input
-                            type="number"
-                            id="raio"
-                            name="raio"
-                            value={measurements.raio || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                    </div>
-                );
+                return <MeasurementInput label="Raio:" name="raio" value={measurements.raio}
+                                         onChange={handleMeasurementChange}/>;
             case 'CILINDRO':
                 return (
                     <div>
-                        <label htmlFor="raio">Raio:</label>
-                        <input
-                            type="number"
-                            id="raio"
-                            name="raio"
-                            value={measurements.raio || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="altura">Altura:</label>
-                        <input
-                            type="number"
-                            id="altura"
-                            name="altura"
-                            value={measurements.altura || ''}
-                            onChange={handleMeasurementChange}
-                        />
+                        <MeasurementInput label="Raio:" name="raio" value={measurements.raio}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Altura:" name="altura" value={measurements.altura}
+                                          onChange={handleMeasurementChange}/>
                     </div>
                 );
             case 'CONE':
                 return (
                     <div>
-                        <label htmlFor="raio">Raio:</label>
-                        <input
-                            type="number"
-                            id="raio"
-                            name="raio"
-                            value={measurements.raio || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="altura">Altura:</label>
-                        <input
-                            type="number"
-                            id="altura"
-                            name="altura"
-                            value={measurements.altura || ''}
-                            onChange={handleMeasurementChange}
-                        />
+                        <MeasurementInput label="Raio:" name="raio" value={measurements.raio}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Altura:" name="altura" value={measurements.altura}
+                                          onChange={handleMeasurementChange}/>
                     </div>
                 );
             case 'PIRAMIDE':
                 return (
                     <div>
-                        <label htmlFor="base">Base:</label>
-                        <input
-                            type="number"
-                            id="base"
-                            name="base"
-                            value={measurements.base || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="altura">Altura:</label>
-                        <input
-                            type="number"
-                            id="altura"
-                            name="altura"
-                            value={measurements.altura || ''}
-                            onChange={handleMeasurementChange}
-                        />
+                        <MeasurementInput label="Base:" name="base" value={measurements.base}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Altura:" name="altura" value={measurements.altura}
+                                          onChange={handleMeasurementChange}/>
                     </div>
                 );
-
             case 'PRISMA_RETANGULAR':
                 return (
                     <div>
-                        <label htmlFor="comprimento">Comprimento:</label>
-                        <input
-                            type="number"
-                            id="comprimento"
-                            name="comprimento"
-                            value={measurements.comprimento || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="largura">Largura:</label>
-                        <input
-                            type="number"
-                            id="largura"
-                            name="largura"
-                            value={measurements.largura || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="altura">Altura:</label>
-                        <input
-                            type="number"
-                            id="altura"
-                            name="altura"
-                            value={measurements.altura || ''}
-                            onChange={handleMeasurementChange}
-                        />
+                        <MeasurementInput label="Comprimento:" name="comprimento" value={measurements.comprimento}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Largura:" name="largura" value={measurements.largura}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Altura:" name="altura" value={measurements.altura}
+                                          onChange={handleMeasurementChange}/>
                     </div>
                 );
             case 'PRISMA_TRIANGULAR':
                 return (
                     <div>
-                        <label htmlFor="base">Base do Triângulo:</label>
-                        <input
-                            type="number"
-                            id="base"
-                            name="base"
-                            value={measurements.base || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="lado1">Lado 1:</label>
-                        <input
-                            type="number"
-                            id="lado1"
-                            name="lado1"
-                            value={measurements.lado1 || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="lado2">Lado 2:</label>
-                        <input
-                            type="number"
-                            id="lado2"
-                            name="lado2"
-                            value={measurements.lado2 || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                        <label htmlFor="altura">Altura do Prisma:</label>
-                        <input
-                            type="number"
-                            id="altura"
-                            name="altura"
-                            value={measurements.altura || ''}
-                            onChange={handleMeasurementChange}
-                        />
+                        <MeasurementInput label="Base do Triângulo:" name="base" value={measurements.base}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Lado 1:" name="lado1" value={measurements.lado1}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Lado 2:" name="lado2" value={measurements.lado2}
+                                          onChange={handleMeasurementChange}/>
+                        <MeasurementInput label="Altura do Prisma:" name="altura" value={measurements.altura}
+                                          onChange={handleMeasurementChange}/>
                     </div>
                 );
             case 'TETRAEDRO':
-                return (
-                    <div>
-                        <label htmlFor="aresta">Aresta:</label>
-                        <input
-                            type="number"
-                            id="aresta"
-                            name="aresta"
-                            value={measurements.aresta || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                    </div>
-                );
+                return <MeasurementInput label="Aresta:" name="aresta" value={measurements.aresta}
+                                         onChange={handleMeasurementChange}/>;
             case 'OCTAEDRO':
-                return (
-                    <div>
-                        <label htmlFor="aresta">Aresta:</label>
-                        <input
-                            type="number"
-                            id="aresta"
-                            name="aresta"
-                            value={measurements.aresta || ''}
-                            onChange={handleMeasurementChange}
-                        />
-                    </div>
-                );
-            default:
-                return null;
+                return <MeasurementInput label="Aresta:" name="aresta" value={measurements.aresta}
+                                         onChange={handleMeasurementChange}/>;
         }
     };
 
@@ -377,8 +242,8 @@ const App: React.FC = () => {
                 <label htmlFor="shape">Forma Geométrica:</label>
                 <select
                     id="shape"
-                    value={shape}
-                    onChange={(e) => setShape(e.target.value as GeometricShape)}
+                    value={figureType}
+                    onChange={(e) => setFigureType(e.target.value as GeometricShape)}
                 >
                     <option value="">Selecione uma forma</option>
                     <option value="CUBO">Cubo</option>
@@ -411,19 +276,18 @@ const App: React.FC = () => {
                 </select>
             </div>
 
-            {shape && (
+            {figureType && (
                 <div className="measurement-inputs">{renderMeasurementInputs()}</div>
             )}
 
-            <button onClick={calculate} disabled={!shape}>
+            <button onClick={calculate} disabled={!figureType}>
                 Calcular
             </button>
 
-            {/* Passando a unidade selecionada para o ResultDisplay */}
             {Object.keys(results).length > 0 ? (
                 <ResultDisplay results={results} unit={selectedUnit}/>
             ) : (
-                <p>Calculando resultados...</p> // Mensagem enquanto carrega
+                <p>Calculando resultados...</p>
             )}
         </div>
     );

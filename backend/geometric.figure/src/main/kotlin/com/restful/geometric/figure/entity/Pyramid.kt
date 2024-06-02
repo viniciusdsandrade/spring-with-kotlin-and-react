@@ -8,7 +8,7 @@ import jakarta.persistence.Entity
 @Entity(name = "Piramid")
 @DiscriminatorValue("piramid")
 @Schema(description = "Represents a pyramid entity.")
-data class Piramid(
+data class Pyramid(
 
     @Schema(description = "The length of the base of the pyramid.")
     @Column(name = "base")
@@ -38,7 +38,7 @@ data class Piramid(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Piramid) return false
+        if (other !is Pyramid) return false
         if (!super.equals(other)) return false
 
         if (base != other.base) return false
