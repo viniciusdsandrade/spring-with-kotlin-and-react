@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import './App.css'
-import FigureService from './FigureService.ts';
+import './App.css';
 
 export type GeometricShape =
     | 'CUBO'
@@ -40,29 +39,29 @@ const ResultDisplay: React.FC<{
     results: CalculationResults;
     unit: MeasurementUnit;
 }> = ({results, unit}) => (
-    <div> {/* Adicione uma div aqui */}
+    <div>
         <h2>Resultados:</h2>
         <div className="result-item">
             <span className="result-label">Perímetro:</span>
             <span>
-                {results.perimetro !== null
-                    ? `${results.perimetro!.toFixed(2)} ${unit}`
-                    : '-'}
-            </span>
+        {results.perimetro !== null
+            ? `${results.perimetro!.toFixed(2)} ${unit}`
+            : '-'}
+      </span>
         </div>
         <div className="result-item">
             <span className="result-label">Área:</span>
             <span>
-                {results.area !== null ? `${results.area!.toFixed(2)} ${unit}²` : '-'}
-            </span>
+        {results.area !== null ? `${results.area!.toFixed(2)} ${unit}²` : '-'}
+      </span>
         </div>
         <div className="result-item">
             <span className="result-label">Volume:</span>
             <span>
-                {results.volume !== null
-                    ? `${results.volume!.toFixed(2)} ${unit}³`
-                    : '-'}
-            </span>
+        {results.volume !== null
+            ? `${results.volume!.toFixed(2)} ${unit}³`
+            : '-'}
+      </span>
         </div>
     </div>
 );
@@ -70,12 +69,15 @@ const ResultDisplay: React.FC<{
 const App: React.FC = () => {
     const [shape, setShape] = useState<GeometricShape | ''>('');
     const [measurements, setMeasurements] = useState<Measurements>({});
-    const [results, setResults] = useState<CalculationResults>({});
+    // Ajuste do estado results para receber a resposta da API
+    const [results, setResults] = useState<CalculationResults>({
+        perimetro: null,
+        area: null,
+        volume: null,
+    });
     const [selectedUnit, setSelectedUnit] = useState<MeasurementUnit>('m'); // Estado para a unidade selecionada
 
-    const handleMeasurementChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleMeasurementChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
         setMeasurements({...measurements, [name]: parseFloat(value)});
     };
@@ -87,68 +89,88 @@ const App: React.FC = () => {
         }
 
         try {
-            // Construa o objeto measurementsToSend com o campo "type"
-            const measurementsToSend = {
-                type:
-                    shape === 'CUBO'
-                        ? 'cube'
-                        : shape === 'ESFERA'
-                            ? 'sphere'
-                            : shape === 'CILINDRO'
-                                ? 'cylinder'
-                                : shape === 'CONE'
-                                    ? 'cone'
-                                    : shape === 'PIRAMIDE'
-                                        ? 'piramid'
-                                        : shape === 'PRISMA_RETANGULAR'
-                                            ? 'rectangular_prism'
-                                            : shape === 'PRISMA_TRIANGULAR'
-                                                ? 'triangular_prism'
-                                                : shape === 'TETRAEDRO'
-                                                    ? 'tetraedron'
-                                                    : shape === 'OCTAEDRO'
-                                                        ? 'octaedro'
-                                                        : '', // Valor padrão, ajuste conforme necessário
-                ...(shape === 'CUBO' && {side: measurements.lado}),
-                ...(shape === 'ESFERA' && {radius: measurements.raio}),
-                ...(shape === 'CILINDRO' && {
-                    radius: measurements.raio,
-                    height: measurements.altura,
-                }),
-                ...(shape === 'CONE' && {
-                    radius: measurements.raio,
-                    height: measurements.altura,
-                }),
-                ...(shape === 'PIRAMIDE' && {
-                    base: measurements.base,
-                    height: measurements.altura,
-                }),
-                ...(shape === 'PRISMA_RETANGULAR' && {
-                    comprimento: measurements.comprimento,
-                    largura: measurements.largura,
-                    altura: measurements.altura,
-                }),
-                ...(shape === 'PRISMA_TRIANGULAR' && {
-                    base: measurements.base,
-                    lado1: measurements.lado1,
-                    lado2: measurements.lado2,
-                    altura: measurements.altura,
-                }),
-                ...(shape === 'TETRAEDRO' && {aresta: measurements.aresta}),
-                ...(shape === 'OCTAEDRO' && {aresta: measurements.aresta}),
+            const requestBody = {
+                type: '',
+                measurements: {},
             };
 
-            // Chame a função calculateFigure do FigureService
-            const data = await FigureService.calculateFigure(
-                shape,
-                measurementsToSend
-            );
+            switch (shape) {
+                case 'CUBO':
+                    requestBody.type = 'cube';
+                    requestBody.measurements = {side: measurements.lado};
+                    break;
+                case 'ESFERA':
+                    requestBody.type = 'sphere';
+                    requestBody.measurements = {radius: measurements.raio};
+                    break;
+                case 'CILINDRO':
+                    requestBody.type = 'cylinder';
+                    requestBody.measurements = {
+                        radius: measurements.raio,
+                        height: measurements.altura,
+                    };
+                    break;
+                case 'CONE':
+                    requestBody.type = 'cone';
+                    requestBody.measurements = {
+                        radius: measurements.raio,
+                        height: measurements.altura,
+                    };
+                    break;
+                case 'PIRAMIDE':
+                    requestBody.type = 'pyramid';
+                    requestBody.measurements = {base: measurements.base};
+                    break;
+                case 'PRISMA_RETANGULAR':
+                    requestBody.type = 'rectangular_prism';
+                    requestBody.measurements = {
+                        base: measurements.comprimento,
+                        height: measurements.altura,
+                        width: measurements.largura,
+                    };
+                    break;
+                case 'PRISMA_TRIANGULAR':
+                    requestBody.type = 'triangular_prism';
+                    requestBody.measurements = {
+                        base: measurements.base,
+                        height: measurements.altura,
+                        width: measurements.lado1,
+                    };
+                    break;
+                case 'TETRAEDRO':
+                    requestBody.type = 'tetrahedron';
+                    requestBody.measurements = {edge: measurements.aresta};
+                    break;
+                case 'OCTAEDRO':
+                    requestBody.type = 'octahedron';
+                    requestBody.measurements = {edge: measurements.aresta};
+                    break;
+                default:
+                    return;
+            }
 
-            // Atualize o estado com os resultados do backend
-            setResults(data);
+            const response = await fetch('http://localhost:8080/api/v1/figures/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao calcular figura');
+            }
+
+            const data = await response.json();
+            // ATUALIZA O ESTADO results COM A RESPOSTA DA API
+            setResults({
+                area: data.area,
+                volume: data.volume,
+                perimetro: data.perimeter,
+            });
         } catch (error) {
             console.error('Erro ao calcular figura:', error);
-            // Lidere com o erro, exiba uma mensagem para o usuário, etc.
+            // Lidar com o erro
         }
     };
 

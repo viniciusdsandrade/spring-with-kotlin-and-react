@@ -29,11 +29,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Entity(name = "Figure")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-//@Schema(description = "Abstract class representing a geometric figure.")
+@Schema(description = "Abstract class representing a geometric figure.")
 abstract class Figure {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@Schema(description = "Unique identifier for the figure.", readOnly = true)
+    @Schema(description = "Unique identifier for the figure.", readOnly = true)
     open var id: Long? = null
 
     companion object {
