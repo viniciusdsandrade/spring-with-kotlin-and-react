@@ -107,6 +107,8 @@ button:disabled {
     cursor: not-allowed;
 }
 
+
+
 /* Estilos para os Resultados */
 .result-container {
     border: 2px solid #ccc;
@@ -120,18 +122,15 @@ button:disabled {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    justify-content: space-between;
+    justify-content: space-between; /* Distribui espaço entre label e valor */
 }
 
 .result-label {
     font-weight: bold;
     text-align: left;
-    margin-right: 0;
+    margin-right: 20px; /* Espaçamento entre label e valor */
 }
 
 .result-value {
     text-align: right;
-    flex-grow: 1;
-    margin-left: 20px;
-    width: 100px;
 }

@@ -39,28 +39,37 @@ const ResultDisplay: React.FC<{
     results: CalculationResults;
     unit: MeasurementUnit;
 }> = ({results, unit}) => (
-    <div>
+    <div className="result-container">
         <h2>Resultados:</h2>
         <div className="result-item">
             <span className="result-label">Perímetro:</span>
-            <span>{formatUnit(results.perimetro, unit)}</span>
+            <span className="result-value">{formatUnit(results.perimetro, unit)}</span>
         </div>
         <div className="result-item">
             <span className="result-label">Área:</span>
-            <span>{formatUnit(results.area, unit, 2)}</span>
+            <span className="result-value">{formatUnit(results.area, unit, 2)}</span>
         </div>
         <div className="result-item">
             <span className="result-label">Volume:</span>
-            <span>{formatUnit(results.volume, unit, 3)}</span>
+            <span className="result-value">{formatUnit(results.volume, unit, 3)}</span>
         </div>
     </div>
 );
 
+
 // Função auxiliar para formatar as unidades
 const formatUnit = (value: number | null | undefined, unit: MeasurementUnit, exponent?: number) => {
     if (value === undefined || value === null) return '-';
-    return `${value.toFixed(2)} ${unit}${exponent ? `^${exponent}` : ''}`;
+    const formattedValue = value.toFixed(2);
+    const formattedExponent = exponent !== undefined ? <sup>{exponent}</sup> : null;
+    return (
+        <span>
+            {formattedValue} {unit}
+            {formattedExponent}
+        </span>
+    );
 };
+
 
 // Função auxiliar para criar um input de medida
 const MeasurementInput = ({label, name, value, onChange}: {
@@ -94,7 +103,7 @@ const buildRequestBody = (figureType: GeometricShape, measurements: Measurements
         case 'CONE':
             return {type: 'cone', measurements: {radius: measurements.raio, height: measurements.altura}};
         case 'PIRAMIDE':
-            return { type: 'pyramid', measurements: { base: measurements.base, height: measurements.altura } };
+            return {type: 'pyramid', measurements: {base: measurements.base, height: measurements.altura}};
         case 'PRISMA_RETANGULAR':
             return {
                 type: 'rectangular_prism',
@@ -234,7 +243,7 @@ const App: React.FC = () => {
                 <h1 className="title">Calculadora de Figuras Geométricas</h1>
                 <div className="authors">
                     <h2 className="author">Vinícius dos Santos Andrade RA: 22333</h2>
-                    <h2 className="author">Arthur Gonçalves RA: 22300</h2>
+                    <h2 className="author">Arthur Assis Gonçalves RA: 22300</h2>
                 </div>
             </header>
 
