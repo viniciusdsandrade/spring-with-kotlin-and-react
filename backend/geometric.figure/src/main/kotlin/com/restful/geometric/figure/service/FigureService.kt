@@ -27,7 +27,8 @@ class FigureService {
             "pyramid" -> Pyramid(
                 measurements["base"] ?: throw IllegalArgumentException("Missing base measurement for pyramid."),
                 measurements["height"] ?: throw IllegalArgumentException("Missing height measurement for pyramid.")
-            ) // Corrigido
+            )
+
             "rectangular_prism" -> RectangularPrism(
                 measurements["base"]
                     ?: throw IllegalArgumentException("Missing base measurement for rectangular prism."),
