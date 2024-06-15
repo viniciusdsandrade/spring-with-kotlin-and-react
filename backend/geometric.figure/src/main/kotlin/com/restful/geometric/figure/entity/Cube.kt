@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 
 @Entity(name = "Cube")
 @DiscriminatorValue("cube")
@@ -11,6 +12,7 @@ import jakarta.persistence.Entity
 data class Cube(
 
     @Schema(description = "The length of one side of the cube.")
+    @Positive(message = "Side must be positive.")
     @Column(name = "side")
     val side: Double
 
@@ -52,9 +54,7 @@ data class Cube(
         return hash
     }
 
-
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(  id = $id )"
+        return "Cube(side=$side)"
     }
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 
 @Entity(name = "Piramid")
 @DiscriminatorValue("piramid")
@@ -11,10 +12,12 @@ import jakarta.persistence.Entity
 data class Pyramid(
 
     @Schema(description = "The length of the base of the pyramid.")
+    @Positive(message = "Base must be positive.")
     @Column(name = "base")
     val base: Double,
 
     @Schema(description = "The height of the pyramid.")
+    @Positive(message = "Height must be positive.")
     @Column(name = "height")
     val height: Double
 
@@ -22,7 +25,7 @@ data class Pyramid(
 
     override fun calculateArea(): Double {
         val perimeter = 4.0 * base
-        val area = 0.5 * base * perimeter + base
+        val area = (1.0 / 2.0) * base * perimeter + base
         return df.format(area).toDouble()
     }
 
@@ -60,6 +63,6 @@ data class Pyramid(
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(id = $id)"
+        return "Pyramid(base=$base, height=$height)"
     }
 }

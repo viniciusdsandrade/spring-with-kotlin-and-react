@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 
 @Entity(name = "Cylinder")
 @DiscriminatorValue("cylinder")
@@ -11,10 +12,12 @@ import jakarta.persistence.Entity
 data class Cylinder(
 
     @Schema(description = "The radius of the cylinder.")
+    @Positive(message = "Radius must be positive.")
     @Column(name = "radius")
     val radius: Double,
 
     @Schema(description = "The height of the cylinder.")
+    @Positive(message = "Height must be positive.")
     @Column(name = "height")
     val height: Double
 
@@ -59,6 +62,6 @@ data class Cylinder(
     }
 
     override fun toString(): String {
-        return this::class.simpleName + "(  id = $id )"
+        return "Cylinder(radius=$radius, height=$height)"
     }
 }

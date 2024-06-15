@@ -17,5 +17,4 @@ import io.swagger.v3.oas.annotations.info.Info
         )
     )
 )
-class OpenApiConfig {
-}
+class OpenApiConfig

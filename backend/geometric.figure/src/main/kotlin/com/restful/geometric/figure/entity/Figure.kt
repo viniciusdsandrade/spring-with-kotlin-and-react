@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Schema(description = "Abstract class representing a geometric figure.")
 abstract class Figure {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique identifier for the figure.", readOnly = true)
@@ -40,8 +41,13 @@ abstract class Figure {
         val df = DecimalFormatWrapper("#.####").decimalFormat
     }
 
+    @Schema(description = "Calculates the area of the figure.")
     abstract fun calculateArea(): Double
+
+    @Schema(description = "Calculates the perimeter of the figure.")
     abstract fun calculatePerimeter(): Double
+
+    @Schema(description = "Calculates the volume of the figure.")
     abstract fun calculateVolume(): Double?
 
     override fun equals(other: Any?): Boolean {

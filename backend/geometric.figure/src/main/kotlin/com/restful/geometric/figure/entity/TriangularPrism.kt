@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 
 @Entity(name = "TriangularPrism")
 @DiscriminatorValue("triangular_prism")
@@ -11,14 +12,17 @@ import jakarta.persistence.Entity
 data class TriangularPrism(
 
     @Schema(description = "The length of the base of the triangular prism.")
+    @Positive(message = "Base must be positive.")
     @Column(name = "base")
     private val base: Double,
 
     @Schema(description = "The height of the triangular prism.")
+    @Positive(message = "Height must be positive.")
     @Column(name = "height")
     private val height: Double,
 
     @Schema(description = "The width of the triangular prism.")
+    @Positive(message = "Width must be positive.")
     @Column(name = "width")
     private val width: Double
 
@@ -65,6 +69,6 @@ data class TriangularPrism(
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(id = $id)"
+        return "TriangularPrism(base=$base, height=$height, width=$width)"
     }
 }

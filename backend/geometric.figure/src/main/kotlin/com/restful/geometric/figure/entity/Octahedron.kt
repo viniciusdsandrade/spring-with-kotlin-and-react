@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 import kotlin.math.sqrt
 
 @Entity(name = "Octahedron")
@@ -12,6 +13,7 @@ import kotlin.math.sqrt
 data class Octahedron(
 
     @Schema(description = "The edge length of the octahedron.")
+    @Positive(message = "Edge must be positive.")
     @Column(name = "edge")
     val edge: Double
 
@@ -40,10 +42,17 @@ data class Octahedron(
     }
 
     override fun hashCode(): Int {
-        return 31 * super.hashCode() + edge.hashCode()
+        val prime = 31
+        var hash = super.hashCode()
+
+        hash *= prime + edge.hashCode()
+
+        if (hash < 0) hash *= -1
+
+        return hash
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(id = $id)"
+        return "Octahedron(edge=$edge)"
     }
 }

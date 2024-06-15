@@ -161,7 +161,7 @@ const App: React.FC = () => {
             setResults({
                 area: data.area,
                 volume: data.volume,
-                perimetro: data.perimetro
+                perimetro: data.perimeter
             });
         } catch (error) {
             console.error('Erro ao calcular figura:', error);

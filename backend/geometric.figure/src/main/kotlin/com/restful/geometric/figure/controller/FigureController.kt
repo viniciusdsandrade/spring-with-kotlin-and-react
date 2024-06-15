@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 
 @RestController("FigureController")
 @RequestMapping("/api/v1/figures")
@@ -43,7 +44,7 @@ class FigureController(private val figureService: FigureService) {
         ]
     )
     @PostMapping("/calculate")
-    fun calculate(@RequestBody figureRequest: FigureRequest): ResponseEntity<FigureResponse> {
+    fun calculate(@Valid @RequestBody figureRequest: FigureRequest): ResponseEntity<FigureResponse> {
         logger.info("Received figure request: {}", figureRequest)
 
         val figure = figureService.createFigure(figureRequest.type, figureRequest.measurements)

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 
 @Entity(name = "Sphere")
 @DiscriminatorValue("sphere")
@@ -11,6 +12,7 @@ import jakarta.persistence.Entity
 data class Sphere(
 
     @Schema(description = "The radius of the sphere.")
+    @Positive(message = "Radius must be positive.")
     @Column(name = "radius")
     val radius: Double
 
@@ -27,7 +29,7 @@ data class Sphere(
     }
 
     override fun calculateVolume(): Double {
-        val volume = 4.0 / 3.0 * Math.PI * radius * radius * radius
+        val volume = (4.0 / 3.0) * Math.PI * radius * radius * radius
         return df.format(volume).toDouble()
     }
 
@@ -53,6 +55,6 @@ data class Sphere(
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(id = $id)"
+        return "Sphere(radius=$radius)"
     }
 }

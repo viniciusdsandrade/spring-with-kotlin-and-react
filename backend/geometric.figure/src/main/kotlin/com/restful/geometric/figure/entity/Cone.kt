@@ -4,19 +4,24 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import jakarta.validation.constraints.Positive
 import kotlin.math.sqrt
 
 @Entity(name = "Cone")
 @DiscriminatorValue("cone")
 @Schema(description = "Represents a cone entity.")
 data class Cone(
+
     @Schema(description = "The radius of the cone.")
+    @Positive(message = "Radius must be positive.")
     @Column(name = "radius")
     val radius: Double,
 
     @Schema(description = "The height of the cone.")
+    @Positive(message = "Height must be positive.")
     @Column(name = "height")
     val height: Double
+
 ) : Figure() {
 
     override fun calculateArea(): Double {
@@ -57,8 +62,7 @@ data class Cone(
         return true
     }
 
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(  id = $id )"
+        return "Cone(radius=$radius, height=$height)"
     }
 }
